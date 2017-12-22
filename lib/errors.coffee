@@ -17,10 +17,22 @@ limitations under the License.
 chalk = require('chalk')
 errors = require('resin-cli-errors')
 patterns = require('./utils/patterns')
-Raven = require('raven')
 Promise = require('bluebird')
+Analytics = require('analytics.node').core
+Raven = require('analytics.node').sentryIntegration
+ravenOptions =
+	config: require('./config').sentryDsn
+	release: require('../package.json').version
+	captureUnhandledRejections: true
+	disableConsoleAlerts: true
+Analytics.addIntegration(Raven)
+Analytics.initialize({'Sentry': ravenOptions})
+Analytics.setContext
+	extra:
+		args: process.argv
+		node_version: process.version
 
-captureException = Promise.promisify(Raven.captureException.bind(Raven))
+captureException = Promise.promisify(Analytics.captureException)
 
 exports.handle = (error) ->
 	message = errors.interpret(error)
