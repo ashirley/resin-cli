@@ -27,7 +27,7 @@ export function parseSignature(option: OptionDefinition) {
 		}
 	}
 
-	if (option.parameter != null) {
+	if (option.parameter) {
 		result += ` <${option.parameter}>`;
 	}
 
